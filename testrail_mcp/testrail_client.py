@@ -84,7 +84,10 @@ class TestRailClient:
         uri = f'get_cases/{project_id}'
         if suite_id:
             uri += f'&suite_id={suite_id}'
-        return self._send_request('GET', uri)
+        response = self._send_request('GET', uri)
+        if isinstance(response, dict) and 'cases' in response:
+            return response['cases']
+        return response
     
     def add_case(self, section_id: int, data: Dict) -> Dict:
         """Add a new test case."""
@@ -105,7 +108,10 @@ class TestRailClient:
     
     def get_projects(self) -> List[Dict]:
         """Get all projects."""
-        return self._send_request('GET', 'get_projects')
+        response = self._send_request('GET', 'get_projects')
+        if isinstance(response, dict) and 'projects' in response:
+            return response['projects']
+        return response
     
     def add_project(self, data: Dict) -> Dict:
         """Add a new project."""
@@ -124,9 +130,24 @@ class TestRailClient:
         """Get a test run by ID."""
         return self._send_request('GET', f'get_run/{run_id}')
     
-    def get_runs(self, project_id: int) -> List[Dict]:
+    def get_runs(self, project_id: int, is_completed: Optional[int] = None, is_archived: Optional[int] = None, limit: Optional[int] = None, offset: Optional[int] = None) -> List[Dict]:
         """Get all test runs for a project."""
-        return self._send_request('GET', f'get_runs/{project_id}')
+        uri = f'get_runs/{project_id}'
+        params = []
+        if is_completed is not None:
+            params.append(f'is_completed={is_completed}')
+        if is_archived is not None:
+            params.append(f'is_archived={is_archived}')
+        if limit is not None:
+            params.append(f'limit={limit}')
+        if offset is not None:
+            params.append(f'offset={offset}')
+        if params:
+            uri += '&' + '&'.join(params)
+        response = self._send_request('GET', uri)
+        if isinstance(response, dict) and 'runs' in response:
+            return response['runs']
+        return response
     
     def add_run(self, project_id: int, data: Dict) -> Dict:
         """Add a new test run."""
@@ -147,11 +168,17 @@ class TestRailClient:
     # Results API
     def get_results(self, test_id: int) -> List[Dict]:
         """Get all results for a test."""
-        return self._send_request('GET', f'get_results/{test_id}')
+        response = self._send_request('GET', f'get_results/{test_id}')
+        if isinstance(response, dict) and 'results' in response:
+            return response['results']
+        return response
     
     def get_results_for_run(self, run_id: int) -> List[Dict]:
         """Get all results for a run."""
-        return self._send_request('GET', f'get_results_for_run/{run_id}')
+        response = self._send_request('GET', f'get_results_for_run/{run_id}')
+        if isinstance(response, dict) and 'results' in response:
+            return response['results']
+        return response
     
     def add_result(self, test_id: int, data: Dict) -> Dict:
         """Add a new result for a test."""
@@ -168,7 +195,10 @@ class TestRailClient:
     # Datasets API (assuming TestRail has dataset endpoints)
     def get_datasets(self, project_id: int) -> List[Dict]:
         """Get all datasets for a project."""
-        return self._send_request('GET', f'get_datasets/{project_id}')
+        response = self._send_request('GET', f'get_datasets/{project_id}')
+        if isinstance(response, dict) and 'datasets' in response:
+            return response['datasets']
+        return response
     
     def get_dataset(self, dataset_id: int) -> Dict:
         """Get a dataset by ID."""
@@ -193,8 +223,13 @@ class TestRailClient:
 
     def get_sections(self, project_id: int, suite_id:Optional[int] = None, params:Optional[Dict] = None) -> Dict:
         """Get all sections for a project"""
-        query_params = {**params, "suite_id": suite_id} if suite_id else params
-        return self._send_request('GET', f'get_sections/{project_id}',{params : query_params})
+        uri = f'get_sections/{project_id}'
+        if suite_id:
+            uri += f'&suite_id={suite_id}'
+        response = self._send_request('GET', uri)
+        if isinstance(response, dict) and 'sections' in response:
+            return response['sections']
+        return response
 
     def add_section(self, project_id:int, data:Dict) -> Dict:
         """Add a new section"""

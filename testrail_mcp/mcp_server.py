@@ -364,14 +364,27 @@ class TestRailMCPServer(FastMCP):
             return self.client.get_run(run_id)
         
         @self.tool("get_runs", description="Get all test runs for a project")
-        def get_runs(project_id: int) -> List[Dict]:
+        def get_runs(
+            project_id: int,
+            is_completed: Optional[int] = None,
+            is_archived: Optional[int] = None,
+            limit: Optional[int] = None,
+            offset: Optional[int] = None
+        ) -> List[Dict]:
             """
             Get all test runs for a project.
             
+            By default (no filters), returns non-archived runs only (both active and completed).
+            Archived runs are excluded unless is_archived=1 is explicitly set.
+            
             Args:
                 project_id: The ID of the project
+                is_completed: 1 to return completed runs only, 0 for active runs only. If omitted, returns both. Does not affect archived filtering.
+                is_archived: 1 to return archived runs only, 0 for non-archived only. If omitted, defaults to non-archived (0). You must pass 1 to see archived runs.
+                limit: Maximum number of runs to return per request (default 250, max 250). Use with offset for pagination.
+                offset: Number of runs to skip for pagination (default 0). Use when results exceed the limit.
             """
-            return self.client.get_runs(project_id)
+            return self.client.get_runs(project_id, is_completed, is_archived, limit, offset)
         
         @self.tool("add_run", description="Add a new test run")
         def add_run(
