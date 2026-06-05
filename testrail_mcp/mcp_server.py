@@ -628,6 +628,47 @@ class TestRailMCPServer(FastMCP):
                 dataset_id: The ID of the dataset
             """
             return self.client.delete_dataset(dataset_id)
+
+        # Reports tools
+        @self.tool(
+            "get_reports",
+            description=(
+                "Get all API-accessible reports for a project. "
+                "Only reports configured with the 'On-demand via the API' checkbox are returned."
+            ),
+        )
+        def get_reports(project_id: int) -> List[Dict]:
+            """
+            Get all API-accessible reports for a project.
+
+            Reports must be configured with the 'On-demand via the API' checkbox
+            enabled in the TestRail UI before they appear here.
+
+            Args:
+                project_id: The ID of the project.
+            """
+            return self.client.get_reports(project_id)
+
+        @self.tool(
+            "run_report",
+            description=(
+                "Trigger a report to run and return the URLs to the generated report. "
+                "Use get_reports to find the report template ID. "
+                "The report must have the 'On-demand via the API' option enabled."
+            ),
+        )
+        def run_report(report_template_id: int) -> Dict:
+            """
+            Trigger a report to run.
+
+            Returns a dict with 'url' (HTML view URL) and 'report_url'
+            (direct download URL) for the generated report.
+
+            Args:
+                report_template_id: The ID of the report template to run
+                    (obtained from get_reports).
+            """
+            return self.client.run_report(report_template_id)
     
     def _register_resources(self):
         """Register all TestRail resources with the MCP server."""

@@ -261,3 +261,36 @@ class TestRailClient:
     def move_section(self, section_id:int, data: Dict) -> Dict:
         """Move a section to a different parent or position"""
         return self._send_request('POST', f'move_section/{section_id}', data)
+
+    # Reports API
+    def get_reports(self, project_id: int) -> List[Dict]:
+        """Get all API-accessible reports for a project.
+
+        Only reports that have been configured with the 'On-demand via the API'
+        checkbox enabled are returned.
+
+        Args:
+            project_id: The ID of the project.
+
+        Returns:
+            List of report template objects.
+        """
+        response = self._send_request('GET', f'get_reports/{project_id}')
+        if isinstance(response, dict) and 'reports' in response:
+            return response['reports']
+        return response
+
+    def run_report(self, report_template_id: int) -> Dict:
+        """Trigger a report to run and return the URLs for the generated report.
+
+        The report must have been configured with the 'On-demand via the API'
+        checkbox enabled.
+
+        Args:
+            report_template_id: The ID of the report template to run.
+
+        Returns:
+            A dict containing 'url' (HTML report URL) and 'report_url'
+            (direct URL) for the generated report.
+        """
+        return self._send_request('GET', f'run_report/{report_template_id}')
