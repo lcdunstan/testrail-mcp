@@ -165,6 +165,18 @@ class TestRailClient:
         """Delete a test run."""
         return self._send_request('POST', f'delete_run/{run_id}')
     
+    # Tests API
+    def get_test(self, test_id: int) -> Dict:
+        """Get a single test by ID."""
+        return self._send_request('GET', f'get_test/{test_id}')
+
+    def get_tests(self, run_id: int) -> List[Dict]:
+        """Get all tests for a run."""
+        response = self._send_request('GET', f'get_tests/{run_id}')
+        if isinstance(response, dict) and 'tests' in response:
+            return response['tests']
+        return response
+
     # Results API
     def get_results(self, test_id: int) -> List[Dict]:
         """Get all results for a test."""

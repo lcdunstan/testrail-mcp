@@ -483,6 +483,31 @@ class TestRailMCPServer(FastMCP):
             """
             return self.client.delete_run(run_id)
         
+        # Tests tools
+        @self.tool("get_test", description="Get a single test by ID. Returns the test instance including its case_id, status_id, and run_id.")
+        def get_test(test_id: int) -> Dict:
+            """
+            Get a single test by ID.
+            
+            Args:
+                test_id: The ID of the test
+            """
+            return self.client.get_test(test_id)
+
+        @self.tool("get_tests", description="Get all tests for a run. Returns test instances with their case_id, useful for finding which cases are included in a specific run.")
+        def get_tests(run_id: int) -> List[Dict]:
+            """
+            Get all tests for a run.
+            
+            Each test object includes a case_id field, so this can be used
+            to determine which cases were included in a given run (even if
+            the run is closed or archived).
+            
+            Args:
+                run_id: The ID of the test run
+            """
+            return self.client.get_tests(run_id)
+
         # Results tools
         @self.tool("get_results", description="Get all test results for a test")
         def get_results(test_id: int) -> List[Dict]:
