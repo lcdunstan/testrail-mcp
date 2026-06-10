@@ -629,6 +629,20 @@ class TestRailMCPServer(FastMCP):
             """
             return self.client.delete_dataset(dataset_id)
 
+        # Statuses tools
+        @self.tool(
+            "get_statuses",
+            description="Get all available test statuses (e.g. Passed, Failed, Blocked, Retest, Untested, plus any custom statuses).",
+        )
+        def get_statuses() -> List[Dict]:
+            """
+            Get all available test statuses.
+
+            Returns a list of status objects with id, name, label, and color info.
+            Useful for mapping status_id values in test results to human-readable names.
+            """
+            return self.client.get_statuses()
+
         # Reports tools
         @self.tool(
             "get_reports",

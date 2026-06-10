@@ -262,6 +262,11 @@ class TestRailClient:
         """Move a section to a different parent or position"""
         return self._send_request('POST', f'move_section/{section_id}', data)
 
+    # Statuses API
+    def get_statuses(self) -> List[Dict]:
+        """Get all available test statuses."""
+        return self._send_request('GET', 'get_statuses')
+
     # Reports API
     def get_reports(self, project_id: int) -> List[Dict]:
         """Get all API-accessible reports for a project.
