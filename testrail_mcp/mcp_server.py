@@ -127,7 +127,8 @@ class TestRailMCPServer(FastMCP):
             custom_steps: Optional[str] = None,
             custom_expected: Optional[str] = None,
             custom_steps_separated: Optional[List[Dict[str, str]]] = None,
-            steps_separated: Optional[List[Dict[str, str]]] = None
+            steps_separated: Optional[List[Dict[str, str]]] = None,
+            custom_fields: Optional[Dict[str, Any]] = None
         ) -> Dict:
             """
             Add a new test case.
@@ -152,8 +153,16 @@ class TestRailMCPServer(FastMCP):
                     - expected: The text contents of the "Expected Result" field
                     - additional_info: The text contents of the "Additional Info" field
                     - refs: Reference information for the "References" field
+                custom_fields: A dictionary of additional custom fields to set (optional).
+                    Keys should be the custom field system names as defined in TestRail
+                    (e.g. 'custom_preconds', 'custom_automation_type').
+                    Values can be strings, integers, lists, or other types depending
+                    on the field definition. These are merged into the request body
+                    and any explicitly provided custom_* parameters take precedence.
             """
             data = {'title': title}
+            if custom_fields is not None:
+                data.update(custom_fields)
             if type_id is not None:
                 data['type_id'] = type_id
             if priority_id is not None:
